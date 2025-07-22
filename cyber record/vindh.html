@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vindh Enterprises Record</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Vindh Enterprises Record</h1>
+
+    <form id="vindhForm">
+      <label for="date">Date:</label><br>
+      <input type="date" id="date" readonly><br><br>
+
+      <label for="income">Income (₹):</label><br>
+      <input type="number" id="income" required><br><br>
+
+      <label for="expense">Expense (₹):</label><br>
+      <input type="number" id="expense" required><br><br>
+
+      <label for="note">Note:</label><br>
+      <input type="text" id="note" placeholder="(Optional)"><br><br>
+
+      <button type="submit" class="btn">Save Entry</button>
+    </form>
+
+    <h2 style="margin-top: 40px;">📋 Past Records</h2>
+    <table id="recordTable" border="1" cellpadding="10" style="margin-top: 10px; width: 100%;">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Income</th>
+          <th>Expense</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Vindh Enterprises Script
+    const form = document.getElementById("vindhForm");
+    const dateInput = document.getElementById("date");
+    const incomeInput = document.getElementById("income");
+    const expenseInput = document.getElementById("expense");
+    const noteInput = document.getElementById("note");
+    const tableBody = document.querySelector("#recordTable tbody");
+    const STORAGE_KEY = "vindhRecords";
+
+    // Set current date
+    dateInput.value = new Date().toISOString().split("T")[0];
+
+    // Load records from localStorage
+    function loadRecords() {
+      tableBody.innerHTML = "";
+      const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      records.forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.date}</td>
+          <td>₹${entry.income}</td>
+          <td>₹${entry.expense}</td>
+          <td>${entry.note || ""}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Save new entry
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const newEntry = {
+        date: dateInput.value,
+        income: incomeInput.value,
+        expense: expenseInput.value,
+        note: noteInput.value,
+      };
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      existing.push(newEntry);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+      form.reset();
+      dateInput.value = new Date().toISOString().split("T")[0];
+      loadRecords();
+    });
+
+    // Initial load
+    loadRecords();
+  </script>
+</body>
+</html>
